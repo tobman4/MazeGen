@@ -83,9 +83,9 @@ namespace mazeGenUI {
             // 
             // numericWidth
             // 
-            this.numericWidth.Location = new System.Drawing.Point(48, 41);
+            this.numericWidth.Location = new System.Drawing.Point(48, 53);
             this.numericWidth.Maximum = new decimal(new int[] {
-            1000,
+            10000,
             0,
             0,
             0});
@@ -98,16 +98,16 @@ namespace mazeGenUI {
             this.numericWidth.Size = new System.Drawing.Size(48, 20);
             this.numericWidth.TabIndex = 4;
             this.numericWidth.Value = new decimal(new int[] {
-            4,
+            100,
             0,
             0,
             0});
             // 
             // numericHeigth
             // 
-            this.numericHeigth.Location = new System.Drawing.Point(48, 67);
+            this.numericHeigth.Location = new System.Drawing.Point(48, 79);
             this.numericHeigth.Maximum = new decimal(new int[] {
-            1000,
+            10000,
             0,
             0,
             0});
@@ -120,7 +120,7 @@ namespace mazeGenUI {
             this.numericHeigth.Size = new System.Drawing.Size(48, 20);
             this.numericHeigth.TabIndex = 5;
             this.numericHeigth.Value = new decimal(new int[] {
-            4,
+            100,
             0,
             0,
             0});
@@ -128,7 +128,7 @@ namespace mazeGenUI {
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(4, 43);
+            this.label2.Location = new System.Drawing.Point(4, 55);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(38, 13);
             this.label2.TabIndex = 6;
@@ -137,7 +137,7 @@ namespace mazeGenUI {
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(4, 69);
+            this.label3.Location = new System.Drawing.Point(4, 81);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(41, 13);
             this.label3.TabIndex = 7;
@@ -170,7 +170,7 @@ namespace mazeGenUI {
             // useHighPrio
             // 
             this.useHighPrio.AutoSize = true;
-            this.useHighPrio.Location = new System.Drawing.Point(7, 93);
+            this.useHighPrio.Location = new System.Drawing.Point(7, 35);
             this.useHighPrio.Name = "useHighPrio";
             this.useHighPrio.Size = new System.Drawing.Size(132, 17);
             this.useHighPrio.TabIndex = 11;
@@ -203,14 +203,14 @@ namespace mazeGenUI {
             0,
             -2147483648});
             this.seedBox.Name = "seedBox";
-            this.seedBox.Size = new System.Drawing.Size(120, 20);
+            this.seedBox.Size = new System.Drawing.Size(57, 20);
             this.seedBox.TabIndex = 13;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(322, 197);
+            this.ClientSize = new System.Drawing.Size(257, 197);
             this.Controls.Add(this.seedBox);
             this.Controls.Add(this.useSeedBox);
             this.Controls.Add(this.useHighPrio);

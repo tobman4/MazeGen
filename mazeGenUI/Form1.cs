@@ -32,7 +32,7 @@ namespace mazeGenUI {
         }
         
         private void startButton_Click(object sender, EventArgs e) {
-            GC.Collect();
+            GC.Collect();// lazy man
             GC.WaitForPendingFinalizers();
             
             if(m?.mode != Mode.Making) {
@@ -52,8 +52,9 @@ namespace mazeGenUI {
                 }
 
                 Thread t = new Thread(() => {
-                    m.makePath(ref doneCells, ref pros,seed);
+                    m.makePath(ref doneCells, ref pros, seed);
                 });
+                t.Name = "MazeThread";
 
                 progressBar1.Maximum = m.cellCount;
                 progressBar1.Value = 0;
@@ -69,12 +70,6 @@ namespace mazeGenUI {
         }
 
         private void timer1_Tick(object sender, EventArgs e) {
-            /*
-            if(m.mode == Mode.Done) {
-                timer1.Enabled = false;
-            }
-            */
-
             prosentLabel.Text = $"{pros}%";
 
             progressBar1.Value = doneCells;
@@ -104,11 +99,19 @@ namespace mazeGenUI {
                 m = new Maze((int)numericWidth.Value, (int)numericHeigth.Value);
             }
 
+           // m.grid[500,500].DBG = true;
+
             DialogResult res = folderBrowserDialog1.ShowDialog();
             if(res == DialogResult.OK) {
                 Bitmap pic = m.makeImage();
                 string path = folderBrowserDialog1.SelectedPath + "/Maze.bmp";
                 pic.Save(path, ImageFormat.Bmp);
+
+                //pic = m.getImage(new Point(500,500), new Size(20,20));
+                //path = folderBrowserDialog1.SelectedPath + "/MazeSmall.bmp";
+                //pic.Save(path, ImageFormat.Bmp);
+
+
             }
         }
 

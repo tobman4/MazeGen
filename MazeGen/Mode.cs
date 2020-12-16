@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace MazeGen {
     public enum Mode {
         Making,
+        Preping,
         Done,
         NotMade,
         Stoped,

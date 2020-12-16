@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace MazeGen {
     public class Maze : IDisposable {
 
         public event EventHandler<mazeDoneData> mazeDoneEvent;
 
-        private Cell[,] grid;
+        public Cell[,] grid;
         private int width, height;
 
         public float prosentDone = 0;
@@ -22,7 +24,7 @@ namespace MazeGen {
 
         public Maze(int width, int height) {
 
-            mode = Mode.NotMade;
+            mode = Mode.Preping;
 
             grid = new Cell[width, height];
 
@@ -31,11 +33,18 @@ namespace MazeGen {
 
             cellCount = width * height;
 
+            ThreadPool.QueueUserWorkItem(this.initGrid);
+
+
+        }
+
+        private void initGrid(object stateData) {
             for (int i = 0; i < width; i++) {
                 for (int j = 0; j < height; j++) {
                     grid[i, j] = new Cell(i, j);
                 }
             }
+            mode = Mode.NotMade;
         }
 
         private List<Cell> getFrends(int x, int y) {
@@ -57,8 +66,19 @@ namespace MazeGen {
         }
 
         public void makePath(ref int doneCells,ref float prosent, int seed = -99) {
-            DateTime startTime = DateTime.Now;
             
+            if(Thread.CurrentThread.Name == "MAIN" && mode == Mode.Preping) {
+                throw new Exception("Maze not ready");
+            } else if(mode == Mode.Preping) {
+                while(mode == Mode.Preping) {
+                    Thread.Sleep(500);
+                }
+            }
+            
+            DateTime startTime = DateTime.Now;
+
+            Debug.WriteLine("Star making maze");
+
             mode = Mode.Making;
             prosentDone = 0;
             doneCells = 0;
@@ -71,7 +91,6 @@ namespace MazeGen {
             }
 
             List<Cell> stack = new List<Cell> { grid[0,0] };
-            //List<Cell> done = new List<Cell>();
 
             bool flag = false;
             while(!flag) {
@@ -143,6 +162,53 @@ namespace MazeGen {
 
             mazeDoneEvent.Invoke(this,data);
 
+            mode = Mode.Done;
+        }
+
+        private void showArea(GridArea area) {
+            grid[area.home.X, area.home.Y].DBG = true;
+            for (int i = area.home.Y; i < area.size.Height; i++) {
+                grid[area.home.X, 10 + i].setWall(wall.Rigth, true);
+            }
+        }
+
+        private void makePathArea(GridArea area, Random rng) {
+            showArea(area);
+        }
+
+        public void makePathThread(int seed = -99) {
+            DateTime startTime = DateTime.Now;
+            
+            Thread.Sleep(100);
+            
+            Random r;
+            if (seed != -99) {
+                r = new Random(seed);
+            } else {
+                r = new Random();
+            }
+
+            GridArea g = new GridArea(0, 0, this.width, this.height);
+            makePathArea(g,r);
+
+            /*
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    grid[i, j].setWall(wall.Down,false);
+                    grid[i, j].setWall(wall.Left, false);
+                    grid[i, j].setWall(wall.Rigth, false);
+                    grid[i, j].setWall(wall.Top, false);
+                }
+            }
+            */
+
+
+            mazeDoneData data = new mazeDoneData();
+            data.seed = seed;
+            data.timeUsed = DateTime.Now - startTime;
+
+            mazeDoneEvent.Invoke(this, data);
+
 
             mode = Mode.Done;
         }
@@ -153,6 +219,7 @@ namespace MazeGen {
             }
         }
 
+        [Obsolete]
         public Bitmap makeImage() {
             bool wasPaused = mode == Mode.Making;
             if(wasPaused) {
@@ -165,7 +232,7 @@ namespace MazeGen {
                 for(int j = 0; j < o.Height; j++) {
                     if(i%2 == 0 && j%2 == 0) {
 
-                        Color cellColor = (grid[i / 2, j / 2].DBG) ? Color.Pink : Color.White;
+                        Color cellColor = (grid[i / 2, j / 2].DBG) ? Color.FromArgb(0,255,0,255) : Color.White;
                         o.SetPixel(i,j, cellColor);
                         
                         bool wall_rigth = grid[i / 2, j / 2].getWall(wall.Rigth);
@@ -181,6 +248,53 @@ namespace MazeGen {
             }
             if(wasPaused) {
                 mode = Mode.Making;
+            }
+            return o;
+        }
+        
+        public Bitmap getImage(Point pos, Size size) {
+            Bitmap o = new Bitmap(
+                (int)Math.Ceiling((decimal)size.Width * 2),
+                (int)Math.Ceiling((decimal)size.Height * 2)
+            );
+
+            if (pos.X < 0 || pos.X >= width || pos.Y < 0 || pos.Y >= height) {
+                throw new Exception("");
+            }
+
+            
+            pos.X -= Math.Max(0, pos.X - size.Width / 2);
+            pos.Y -= Math.Max(0, pos.Y - size.Height / 2);
+            /*
+            if(pos.X != 0) {
+                size.Width /= 2;
+            }
+
+            if(pos.Y != 0) {
+                size.Height /= 2;
+            }
+            */
+
+            for (int i = 0; i < o.Width; i++) {
+                for (int j = 0; j < o.Height; j++) {
+                    if (i % 2 == 0 && j % 2 == 0) {
+
+                        int x = pos.X + i/2;
+                        int y = pos.Y + j/2;
+
+                        Color cellColor = (grid[x,y].DBG) ? Color.Pink : Color.White;
+                        o.SetPixel(i, j, cellColor);
+
+                        bool wall_rigth = grid[x,y].getWall(wall.Rigth);
+                        bool wall_down = grid[x,y].getWall(wall.Down);
+                        if (i < o.Width) {
+                            o.SetPixel(i + 1, j, (wall_rigth) ? Color.Black : Color.White);
+                        }
+                        if (j < o.Height) {
+                            o.SetPixel(i, j + 1, (wall_down) ? Color.Black : Color.White);
+                        }
+                    }
+                }
             }
             return o;
         }

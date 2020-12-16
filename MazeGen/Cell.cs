@@ -14,16 +14,18 @@ namespace MazeGen {
         Left = 3,
     }
 
-    class Cell : IDisposable {
+    public class Cell : IDisposable {
 
-        public bool DBG = false;
+        public bool DBG;
         
         public int x;
         public int y;
 
-        public bool isDone = false;
+        public bool isDone;
 
-        private bool[] walls = new bool[] { true, true, true, true };
+        private bool[] walls;
+
+        static public bool startOpen = false;
         /*
          * wall array
            0
@@ -34,6 +36,11 @@ namespace MazeGen {
         public Cell(int xi, int yi) {
             x = xi;
             y = yi;
+
+            DBG = false;
+            isDone = false;
+
+            walls = new bool[] { !startOpen, !startOpen, !startOpen, !startOpen };
         }
 
         public void setWall(wall w, bool state) => walls[(int)w] = state;
