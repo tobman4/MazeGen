@@ -16,12 +16,12 @@ namespace MazeGen {
 
     public class Cell : IDisposable {
 
-        public bool DBG;
+        public bool DBG = false;
+        public bool isDone = false;
         
         public int x;
         public int y;
 
-        public bool isDone;
 
         private bool[] walls;
 
@@ -37,14 +37,20 @@ namespace MazeGen {
             x = xi;
             y = yi;
 
-            DBG = false;
-            isDone = false;
-
             walls = new bool[] { !startOpen, !startOpen, !startOpen, !startOpen };
         }
 
         public void setWall(wall w, bool state) => walls[(int)w] = state;
         public bool getWall(wall w) => walls[(int)w];
+
+        public int openings() {
+            int o = 0;
+            o += walls[0] ? 1 : 0;
+            o += walls[1] ? 1 : 0;
+            o += walls[2] ? 1 : 0;
+            o += walls[3] ? 1 : 0;
+            return o;
+        }
 
         public override string ToString() {
             return $"Cell({x},{y})";

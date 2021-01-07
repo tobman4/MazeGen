@@ -161,7 +161,7 @@ namespace mazeGenUI {
             // modeLabel
             // 
             this.modeLabel.AutoSize = true;
-            this.modeLabel.Location = new System.Drawing.Point(171, 146);
+            this.modeLabel.Location = new System.Drawing.Point(174, 120);
             this.modeLabel.Name = "modeLabel";
             this.modeLabel.Size = new System.Drawing.Size(59, 13);
             this.modeLabel.TabIndex = 9;

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Drawing.Imaging;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -34,25 +35,26 @@ namespace mazeGenUI {
         private void startButton_Click(object sender, EventArgs e) {
             GC.Collect();// lazy man
             GC.WaitForPendingFinalizers();
-            
-            if(m?.mode != Mode.Making) {
-                
-                if(m != null) {
+
+            if (m?.mode != Mode.Making) {
+
+                if (m != null) {
                     m.Dispose();
                 }
 
                 int seed = useSeedBox.Checked ? (int)seedBox.Value : -99;
 
-                m = new Maze((int)numericWidth.Value,(int)numericHeigth.Value);
+                m = new Maze((int)numericWidth.Value, (int)numericHeigth.Value);
 
                 m.mazeDoneEvent += mazeDoneUpdate;
 
-                if(pathThread != null) {
+                if (pathThread != null) {
                     pathThread.Abort();
                 }
 
                 Thread t = new Thread(() => {
-                    m.makePath(ref doneCells, ref pros, seed);
+                    m.makePathThread(ref doneCells, ref pros, seed);
+                    //m.makePath(ref doneCells, ref pros, seed);
                 });
                 t.Name = "MazeThread";
 
@@ -99,19 +101,12 @@ namespace mazeGenUI {
                 m = new Maze((int)numericWidth.Value, (int)numericHeigth.Value);
             }
 
-           // m.grid[500,500].DBG = true;
-
             DialogResult res = folderBrowserDialog1.ShowDialog();
             if(res == DialogResult.OK) {
-                Bitmap pic = m.makeImage();
+                Bitmap pic = m.getImage(new Point(0,0), new Size(m.width,m.height));
+                //Bitmap pic = m.makeImage();
                 string path = folderBrowserDialog1.SelectedPath + "/Maze.bmp";
                 pic.Save(path, ImageFormat.Bmp);
-
-                //pic = m.getImage(new Point(500,500), new Size(20,20));
-                //path = folderBrowserDialog1.SelectedPath + "/MazeSmall.bmp";
-                //pic.Save(path, ImageFormat.Bmp);
-
-
             }
         }
 

@@ -10,22 +10,40 @@ namespace MazeGen {
         public Point home;
         public Size size;
 
-        public Point Entry;
+        public Point TL {
+            get {
+                return new Point(home.X, home.Y);
+            }
+        }
+        public Point TR {
+            get {
+                return new Point(home.X+size.Width, home.Y);
+            }
+        }
+        public Point BL {
+            get {
+                return new Point(home.X, home.Y+size.Height);
+            }
+        }
+        public Point BR {
+            get {
+                return new Point(home.X + size.Width, home.Y+size.Height);
+            }
+        }
 
         public int cellCount;
+        public int doneCells = 0;
        
         public GridArea(Point homei, Size sizei) {
             this.home = homei;
             this.size = sizei;
             cellCount = size.Width * size.Height;
-            Entry = new Point(0,0);
         }
 
         public GridArea(int homeX, int homeY, int w, int h) {
             this.home = new Point(homeX,homeY);
-            this.size = new Size();
+            this.size = new Size(w,h);
             cellCount = size.Width * size.Height;
-            Entry = new Point(0, 0);
         }
 
     }
